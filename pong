@@ -1,0 +1,213 @@
+import turtle
+import time
+import threading
+import datetime
+
+players = int(input("Enter the number of players (1 or 2): "))
+print(players)
+if players == 1:
+    difficulty = str(input("Enter the difficulty you want (easy, normal, hard, impossible): "))
+    movementspeed = 0
+    if difficulty == "easy":
+        movementspeed = 0.1
+    elif difficulty == "normal":
+        movementspeed = 0.15
+    elif difficulty == "hard":
+        movementspeed = 0.2
+    elif difficulty == "impossible":
+        movementspeed = 0.5
+    else:
+        movementspeed = 0.1
+        print("Defaulting to easy difficulty")
+
+wn = turtle.Screen()
+wn.title("Pong")
+wn.setup(width=800,height=600)
+wn.bgcolor("black")
+wn.delay(1000 // 10)
+wn.tracer(0)
+
+# FPS counter turtle
+fps_counter = turtle.Turtle()
+fps_counter.speed(0)
+fps_counter.color("white")
+fps_counter.penup()
+fps_counter.hideturtle()
+fps_counter.goto(0, 240)
+
+# Set the start time
+start_time = time.time()
+
+# Set the frame count to 0
+frame_count = 0
+
+leftScore = 0
+rightScore = 0
+
+# Paddle 1
+paddle1 = turtle.Turtle()
+paddle1.shape("square")
+paddle1.speed(0)
+paddle1.color("white")
+paddle1.shapesize(stretch_wid=5, stretch_len=1)
+paddle1.penup()
+paddle1.goto(-350,0)
+
+# Paddle 2
+paddle2 = turtle.Turtle()
+paddle2.shape("square")
+paddle2.speed(0)
+paddle2.color("white")
+paddle2.shapesize(stretch_wid=5, stretch_len=1)
+paddle2.penup()
+paddle2.goto(350,0)
+
+# Ball
+ball = turtle.Turtle()
+ball.shape("square")
+ball.speed(0)
+ball.color("white")
+ball.penup()
+ball.goto(0,0)
+ball.dx = 0.075
+ball.dy = 0.075
+
+# Pen
+pen = turtle.Turtle()
+pen.speed(0)
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0,260)
+
+# Functions
+def Paddle1Up():
+    y = paddle1.ycor()
+    paddle1.sety(y + 30)
+    print("w")
+
+def Paddle1Down():
+    y = paddle1.ycor()
+    paddle1.sety(y - 30)
+    print("s")
+
+def Paddle2Up():
+    y = paddle2.ycor()
+    paddle2.sety(y + 30)
+
+def Paddle2Down():
+    y = paddle2.ycor()
+    paddle2.sety(y - 30)
+
+# Keybinds
+wn.listen()
+wn.onkeypress(Paddle1Up,"w")
+wn.onkeypress(Paddle1Down, "s")
+if players == 2:
+    wn.onkeypress(Paddle2Up, "Up")
+    wn.onkeypress(Paddle2Down, "Down")
+
+def move_computer_player():
+    movementdelay = 0.5
+    while True:
+        time.sleep(movementdelay)
+        if ball.ycor() > paddle2.ycor():
+            paddle2.sety(paddle2.ycor() + 0.05)
+        if ball.ycor() < paddle2.ycor():
+            paddle2.sety(paddle2.ycor() - 0.05)
+
+# Create a new thread to handle the computer player's movement
+
+
+time.sleep(2)
+while True:
+    wn.update()
+
+
+
+
+    # Ball movement
+    ball.setx(ball.xcor() + ball.dx)
+    ball.sety(ball.ycor() + ball.dy)
+
+    # Border checking
+    if ball.ycor() > 290:
+        ball.sety(290)
+        ball.dy *= -1
+
+    if ball.ycor() < -290:
+        ball.sety(-290)
+        ball.dy *= -1
+
+    if ball.xcor() > 410:
+        ball.goto(0,0)
+        ball.dx *= -1
+        if ball.dx > 0:
+            ball.dx = 0.075
+
+        else:
+            ball.dx = -0.075
+        leftScore += 1
+        pen.clear()
+        pen.write(str(leftScore) + "             " + str(rightScore), align="center", font=("Courier", 24, "normal"))
+        time.sleep(1)
+        ball.dy = 0.075
+        if leftScore == 5:
+            print("Left player won!")
+            Process.terminate()
+
+    if ball.xcor() < -410:
+        ball.goto(0,0)
+        ball.dx *= -1
+        if ball.dx > 0:
+            ball.dx = 0.075
+        else:
+            ball.dx = -0.075
+        rightScore += 1
+        pen.clear()
+        pen.write(str(leftScore) + "             " + str(rightScore), align="center", font=("Courier", 24, "normal"))
+        time.sleep(1)
+        ball.dy = 0.075
+        if rightScore == 5:
+            print("Right player won!")
+            Process.terminate()
+
+    if paddle1.ycor() > 250:
+        paddle1.sety(250)
+    if paddle1.ycor() < -250:
+        paddle1.sety(-250)
+    if paddle2.ycor() > 250:
+        paddle2.sety(250)
+    if paddle2.ycor() < -250:
+        paddle2.sety(-250)
+
+    # Paddle collision
+    if 360 > ball.xcor() > 340 and (ball.ycor() < paddle2.ycor() + 50 and ball.ycor() > paddle2.ycor() - 50):
+        ball.setx(340)
+        ball.dx *= -1
+        if ball.dx > 0:
+            ball.dx += 0.015
+        else:
+            ball.dx -= 0.015
+        if ball.dy > 0:
+            ball.dy += 0.015
+        else:
+            ball.dy -= 0.015
+
+    if -360 < ball.xcor() < -340 and (paddle1.ycor() + 50 > ball.ycor() > paddle1.ycor() - 50):
+        ball.dx *= -1
+        ball.setx(-340)
+        if ball.dx > 0:
+            ball.dx += 0.015
+        else:
+            ball.dx -= 0.015
+        if ball.dy > 0:
+            ball.dy += 0.015
+        else:
+            ball.dy -= 0.015
+
+    if players == 1:
+        if ball.ycor() > paddle2.ycor():
+            paddle2.sety(paddle2.ycor() + movementspeed)
+        if ball.ycor() < paddle2.ycor():
+            paddle2.sety(paddle2.ycor() - movementspeed)
