@@ -1,0 +1,48 @@
+possible_Spaces = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+gameBoard = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+def DrawGameBoard():
+    print(f" {gameBoard[0]} | {gameBoard[1]} | {gameBoard[2]} \n---+---+---\n {gameBoard[3]} | {gameBoard[4]} | {gameBoard[5]} \n---+---+---\n {gameBoard[6]} | {gameBoard[7]} | {gameBoard[8]}")
+
+def CheckForWinner():
+    for i in range(3):
+        if gameBoard[i] == gameBoard [i + 1] == gameBoard[i -1] or gameBoard[i - 1] == gameBoard [i + 2] == gameBoard[i + 5] or gameBoard[0] == gameBoard[4] == gameBoard[8] or gameBoard[2] == gameBoard[4] == gameBoard[6]:
+            return True
+
+turnCounter = 0
+turn = None
+while True:
+    DrawGameBoard()
+    turnCounter += 1
+    gotInput = False
+    while gotInput == False:
+        if turnCounter % 2 == 1:
+            turn = "X"
+            try:
+                playerInput = int(input("X, What tile do you want to choose? "))
+                if 1 <= playerInput <= 9 and playerInput in possible_Spaces:
+                    gotInput = True
+                else:
+                    print("Invalid Input, Please try again.")
+            except:
+                print("Invalid Input, Please try again.")
+
+        if turnCounter % 2 == 0:
+            turn = "O"
+            try:
+                playerInput = int(input("O, What tile do you want to choose? "))
+                if 1 <= playerInput <= 9 and playerInput in possible_Spaces:
+                    gotInput = True
+                else:
+                    print("Invalid Input, Please try again.")
+            except:
+                print("Invalid Input, Please try again.")
+
+    possible_Spaces.remove(playerInput)
+    gameBoard[playerInput - 1] = turn
+    if CheckForWinner():
+        print(f"{turn} won!")
+        break
+    if turnCounter == 9:
+        print("Tie!")
+        break
